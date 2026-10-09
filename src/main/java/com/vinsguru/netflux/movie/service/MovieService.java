@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,15 +65,16 @@ public class MovieService {
     }
 
     public List<MovieSummary> search(MovieSearchRequest request) {
-        var spec = Specification.<Movie>where(MovieSpecifications.titleContains(normalize(request.title())))
-                .and(MovieSpecifications.hasGenre(normalize(request.genre())))
-                .and(MovieSpecifications.directorContains(normalize(request.director())));
+        var spec = Specification.<Movie>where(MovieSpecifications.titleContains(normalize(request.title()).orElse(null)))
+                .and(MovieSpecifications.hasGenre(normalize(request.genre()).orElse(null)))
+                .and(MovieSpecifications.directorContains(normalize(request.director()).orElse(null)));
         return repository.findAll(spec, PageRequest.of(0, request.limit(), SEARCH_SORT)).stream()
                 .map(MovieMapper::toSummary)
                 .toList();
     }
 
-    private String normalize(String value) {
-        return StringUtils.hasText(value) ? value : null;
+    private Optional<String> normalize(String value) {
+        return Optional.ofNullable(value)
+                .filter(StringUtils::hasText);
     }
 }
