@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class MovieService {
 
+    /**
+     * Orders movies by vote count, highest first. Movies without a vote count are placed last.
+     */
     private static final Sort POPULAR_SORT = Sort.by(Sort.Order.desc("voteCount").nullsLast());
     private static final Sort LATEST_SORT = Sort.by(Sort.Order.desc("releaseDate").nullsLast());
     private static final Sort SEARCH_SORT = Sort.by(Sort.Order.desc("popularity").nullsLast());
